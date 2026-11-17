@@ -1,65 +1,51 @@
-// ACS Household contact form. The default mode prepares a draft email.
-// To enable direct submissions, create a Formspree form, verify its recipient
-// in Formspree, and add its HTTPS endpoint to data-formspree-endpoint in index.html.
-// Never put passwords or account tokens in this public file.
+// ACS Household — contact form for GitHub Pages + Formspree.
+// Formspree receives the submissions. The public endpoint is not a secret.
+// No passwords or private API keys belong in this file.
 const contactForm = document.getElementById('contact-form');
 const formStatus = document.getElementById('form-status');
 const submitButton = document.getElementById('form-submit');
 const submitLabel = document.getElementById('submit-label');
-const formNote = document.getElementById('form-note');
-const privacyNote = document.getElementById('privacy-note');
 
-if (contactForm) {
-  const endpoint = (contactForm.dataset.formspreeEndpoint || '').trim();
-  const directMode = /^https:\/\/formspree\.io\/f\/[A-Za-z0-9]+$/.test(endpoint);
-  const emailDestination = contactForm.dataset.contactEmail || 'hello@acshousehold.com';
-
-  if (directMode) {
-    submitLabel.textContent = 'Send enquiry';
-    formNote.textContent = 'Your enquiry will be submitted securely using our contact form provider.';
-    privacyNote.textContent = 'Your details will be used to respond to your enquiry and processed by the contact form provider. Please avoid sending sensitive information in this initial message.';
-  }
-
+if (contactForm && formStatus && submitButton && submitLabel) {
   contactForm.addEventListener('submit', async (event) => {
     event.preventDefault();
     if (!contactForm.reportValidity()) return;
-    const data = new FormData(contactForm);
-    const name = String(data.get('name') || '').trim();
-    const email = String(data.get('email') || '').trim();
-    const location = String(data.get('location') || '').trim();
-    const supportType = String(data.get('support_type') || '').trim();
-    const message = String(data.get('message') || '').trim();
-    if (!name || !email || !message) return;
 
-    formStatus.hidden = false;
-    if (!directMode) {
-      const subject = encodeURIComponent('ACS Household — private household enquiry');
-      const body = encodeURIComponent([
-        'Hello Csilla,', '', message, '',
-        supportType ? `Support requested: ${supportType}` : '',
-        location ? `Location: ${location}` : '', '',
-        'Kind regards,', name, email
-      ].filter((line, i, arr) => line !== '' || arr[i - 1] !== '').join('\n'));
-      formStatus.textContent = 'An email draft should open in your email app. Please press Send there. If no app opens, use the email address below.';
-      window.location.href = `mailto:${emailDestination}?subject=${subject}&body=${body}`;
+    const name = contactForm.elements.namedItem('name')?.value?.trim();
+    const email = contactForm.elements.namedItem('email')?.value?.trim();
+    const message = contactForm.elements.namedItem('message')?.value?.trim();
+    if (!name || !email || !message) {
+      formStatus.hidden = false;
+      formStatus.textContent = 'Please complete your name, email and message.';
       return;
     }
 
-    // Direct submission is only used once a valid Formspree endpoint is set.
+    const endpoint = contactForm.action;
+    if (!/^https:\/\/formspree\.io\/f\/[A-Za-z0-9]+$/.test(endpoint)) {
+      formStatus.hidden = false;
+      formStatus.textContent = 'This form is not configured yet. Please use the email address below.';
+      return;
+    }
+
     submitButton.disabled = true;
     submitLabel.textContent = 'Sending…';
+    formStatus.hidden = false;
     formStatus.textContent = 'Sending your enquiry…';
     try {
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: { Accept: 'application/json' },
-        body: data
+        body: new FormData(contactForm)
       });
-      if (!response.ok) throw new Error(`Form submission failed (${response.status})`);
+      if (!response.ok) {
+        let errorMessage = 'Your enquiry could not be sent. Please try again or use the email address below.';
+        // Do not echo server messages into the page: keep user-facing errors clear.
+        throw new Error(errorMessage);
+      }
       contactForm.reset();
-      formStatus.textContent = 'Thank you — your enquiry was submitted. I look forward to reading it.';
+      formStatus.textContent = 'Thank you — your enquiry has been submitted successfully.';
     } catch (error) {
-      formStatus.textContent = 'Your enquiry could not be sent. Please try again or use the email address below.';
+      formStatus.textContent = 'Your enquiry could not be sent. Please try again or email hello@acshousehold.com directly.';
     } finally {
       submitButton.disabled = false;
       submitLabel.textContent = 'Send enquiry';

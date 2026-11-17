@@ -158,10 +158,9 @@
           <p class="section-number">05 / GET IN TOUCH</p>
           <h2 id="contact-title">I'd love to <em>hear from you.</em></h2>
           <p>If you're looking for a housekeeper or would like to explore regular household support, tell me a little about your home, where you're based and what you're looking for.</p>
-          <!-- The form currently prepares an email draft. Once you have a Formspree form ID,
-               set data-formspree-endpoint to https://formspree.io/f/YOUR_FORM_ID.
-               Do not publish a fake endpoint or claim the direct form is active until tested. -->
-          <form class="contact-form" id="contact-form" data-contact-email="hello@acshousehold.com" data-formspree-endpoint="">
+          <!-- Formspree receives enquiries; the existing contact.js handles submissions on-page.
+               The HTML action/method also provide a non-JavaScript fallback. -->
+          <form class="contact-form" id="contact-form" action="https://formspree.io/f/xgakkznl" method="POST" data-contact-email="hello@acshousehold.com" data-formspree-endpoint="https://formspree.io/f/xgakkznl">
             <div class="form-row">
               <div class="form-field">
                 <label for="sender-name">Your name <span aria-hidden="true">*</span></label>
@@ -193,11 +192,11 @@
               <textarea id="sender-message" name="message" rows="6" maxlength="3000" required placeholder="A few details about your household and the help you're looking for…"></textarea>
             </div>
             <div class="form-actions">
-              <button class="button-light form-submit" id="form-submit" type="submit"><svg aria-hidden="true"><use href="#icon-envelope"></use></svg> <span id="submit-label">Prepare email</span></button>
-              <p class="form-note" id="form-note">This opens a draft in your email app. Please press Send there — the website doesn't send messages directly yet.</p>
+              <button class="button-light form-submit" id="form-submit" type="submit"><svg aria-hidden="true"><use href="#icon-envelope"></use></svg> <span id="submit-label">Send enquiry</span></button>
+              <p class="form-note" id="form-note">Your enquiry will be sent through Formspree, our contact form provider.</p>
             </div>
             <p class="form-status" id="form-status" role="status" aria-live="polite" hidden></p>
-            <p class="privacy-note" id="privacy-note">Your details are only used to respond to your enquiry. This website doesn't store messages; until direct submission is configured, you'll send from your own email app.</p>
+            <p class="privacy-note" id="privacy-note">Your details will be used to respond to your enquiry and processed by Formspree. Please don't include sensitive personal information in your initial message.</p>
           </form>
           <p class="email-alternative">Prefer email? You can contact me directly:</p>
           <!-- Contact mailbox is hosted by Porkbun. -->
