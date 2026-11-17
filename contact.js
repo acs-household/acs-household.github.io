@@ -12,7 +12,7 @@ const privacyNote = document.getElementById('privacy-note');
 if (contactForm) {
   const endpoint = (contactForm.dataset.formspreeEndpoint || '').trim();
   const directMode = /^https:\/\/formspree\.io\/f\/[A-Za-z0-9]+$/.test(endpoint);
-  const emailDestination = contactForm.dataset.contactEmail || 'acshousemanagement@gmail.com';
+  const emailDestination = contactForm.dataset.contactEmail || 'hello@acshousehold.com';
 
   if (directMode) {
     submitLabel.textContent = 'Send enquiry';
